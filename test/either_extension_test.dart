@@ -6,7 +6,7 @@ void main() {
   group(
     'Success cases',
     () {
-      ErrorHandlingEase.initialize(
+      Failure.initialize(
         (e, s, log, isFatal, infoParams) {},
         (message) {},
         parsingErrorMessageCallback: (type, unParsedData) => '',
@@ -24,7 +24,7 @@ void main() {
   );
 
   group('Failure Case with Exception', () {
-    ErrorHandlingEase.initialize(
+    Failure.initialize(
       (e, s, log, isFatal, infoParams) {},
       (message) => print(message),
       parsingErrorMessageCallback: (type, unParsedData) =>
@@ -47,7 +47,7 @@ void main() {
   });
 
   group('Failure Case with Error', () {
-    ErrorHandlingEase.initialize(
+    Failure.initialize(
       (e, s, log, isFatal, infoParams) {
         print(log);
         print(e);
