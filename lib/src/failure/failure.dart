@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import 'ease_error.dart';
 
 typedef ErrorCallback = void Function(
@@ -9,10 +7,9 @@ typedef ParsingErrorLog = String Function(Type type, Map<String, dynamic> unPars
 typedef CustomErrorParser = Failure Function(Object e, StackTrace s);
 
 abstract class Failure {
-  final String _message;
-  final String _log;
+  final String message;
 
-  Failure(this._log, {String? message}) : _message = message ?? defaultMessage;
+  Failure({String? message}) : message = message ?? defaultMessage;
 
   static late final ErrorCallback onError;
   static late final ExceptionCallback onException;
@@ -53,9 +50,6 @@ abstract class Failure {
     );
   }
 
-  String get message => _message;
-  String get log => _log;
-
   @override
-  String toString() => kDebugMode ? _log : _message;
+  String toString() => message;
 }

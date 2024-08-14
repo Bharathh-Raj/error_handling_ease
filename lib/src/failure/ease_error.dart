@@ -2,7 +2,7 @@ import '../../error_handling_ease.dart';
 
 class EaseError extends Failure {
   EaseError(
-    super.log,
+    this.log,
     this.e,
     this.s, {
     this.infoParams,
@@ -14,6 +14,7 @@ class EaseError extends Failure {
 
   final dynamic e;
   final StackTrace s;
+  final String log;
   final Map<String, dynamic>? infoParams;
   final bool isFatal;
 
