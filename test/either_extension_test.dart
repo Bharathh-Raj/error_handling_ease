@@ -3,15 +3,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 
 void main() {
+  Failure.configure(
+    (e, s, log, isFatal, infoParams) {
+      print(log);
+      print(e);
+    },
+    (message) => print(message),
+    parsingErrorLogCallback: (type, unParsedData) =>
+        'Failed to parse ${type.toString()} of id ${unParsedData['id']}',
+    customErrorParsers: {UnsupportedError: (e, s) => CustomError(e, s)},
+  );
+
   group(
     'Success cases',
     () {
-      Failure.initialize(
-        (e, s, log, isFatal, infoParams) {},
-        (message) {},
-        parsingErrorMessageCallback: (type, unParsedData) => '',
-      );
-
       final response = EitherEase.tryRun(() => 1 + 2, 'Failed to add');
 
       test('response should return Right value', () => expect(response.isRight(), true));
@@ -24,13 +29,6 @@ void main() {
   );
 
   group('Failure Case with Exception', () {
-    Failure.initialize(
-      (e, s, log, isFatal, infoParams) {},
-      (message) => print(message),
-      parsingErrorMessageCallback: (type, unParsedData) =>
-          'Failed to parse ${type.toString()} of id ${unParsedData['id']}',
-    );
-
     final response =
         EitherEase.tryRun<int>(() => throw EaseException('User not signed In'), 'Failed to add');
 
@@ -47,20 +45,10 @@ void main() {
   });
 
   group('Failure Case with Error', () {
-    Failure.initialize(
-      (e, s, log, isFatal, infoParams) {
-        print(log);
-        print(e);
-      },
-      (message) => print(message),
-      parsingErrorMessageCallback: (type, unParsedData) =>
-          'Failed to parse ${type.toString()} of id ${unParsedData['id']}',
-    );
-
     final response = EitherEase.tryRun<int>(
-            // () => throw Error(), 'Failed to run',
-        () => throw UnsupportedError('UnsupportedError message'), 'Failed to run',
-        customErrorParsers: {UnsupportedError: (e, s) => CustomError(e, s)},
+        // () => throw Error(), 'Failed to run',
+        () => throw UnsupportedError('UnsupportedError message'),
+        'Failed to run',
         message: 'Something went wrong',
         infoParams: {'param1': 'test1'});
 
