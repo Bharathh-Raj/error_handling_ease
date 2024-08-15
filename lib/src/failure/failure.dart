@@ -30,9 +30,9 @@ abstract class Failure {
   }
 
   factory Failure.fromError(
+    String log,
     dynamic e,
-    StackTrace s,
-    String log, {
+    StackTrace s, {
     Map<String, dynamic>? infoParams,
     String? message,
     bool isFatal = false,

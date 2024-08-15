@@ -6,8 +6,15 @@ extension EitherEase on Either {
           {Map<String, dynamic>? infoParams, String? message, bool isFatal = false}) =>
       Either.tryCatch(
           call,
-          (e, s) => Failure.fromError(e, s, failureLog,
+          (e, s) => Failure.fromError(failureLog, e, s,
               infoParams: infoParams, message: message, isFatal: isFatal));
+
+  static Future<Either<Failure, R>> tryRunAsync<R>(Future<R> Function() call, String failureLog,
+          {Map<String, dynamic>? infoParams, String? message, bool isFatal = false}) =>
+      TaskEither.tryCatch(
+          call,
+          (e, s) => Failure.fromError(failureLog, e, s,
+              infoParams: infoParams, message: message, isFatal: isFatal)).run();
 
   static Either<ParsingError<R>, R> tryParse<R>(
           Map<String, dynamic> data, R Function(Map<String, dynamic> map) fromMap) =>

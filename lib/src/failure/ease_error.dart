@@ -20,7 +20,7 @@ class EaseError extends Failure {
 
   @override
   String toString() => '''
-      🚨${isFatal ? '🚨🚨Fatal' : ''} Error - $runtimeType
+      🚨${isFatal ? '🚨🚨Fatal' : ''} Error - $runtimeType - $log
       ${infoParams != null ? 'infoParams - ${infoParams.toString()}' : ''}
       ${s.toString()}
       ''';
