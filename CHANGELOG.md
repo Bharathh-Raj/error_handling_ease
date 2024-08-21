@@ -1,3 +1,5 @@
-## 0.0.1
+# 0.1.0
+- Initial Release
 
-* TODO: Describe initial release.
+# 0.2.0
+- documentation update

@@ -2,13 +2,17 @@ import 'package:error_handling_ease/error_handling_ease.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 
+class UserNotRegisteredException extends EaseException{
+  UserNotRegisteredException() : super('Please enter your details to continue.');
+}
+
 void main() {
   Failure.configure(
-    (e, s, log, isFatal, infoParams) {
+    errorActions: (e, s, log, isFatal, infoParams) {
       print(log);
       print(e);
     },
-    (message) => print(message),
+    exceptionActions: (message) => print(message),
     parsingErrorLogCallback: (type, unParsedData) =>
         'Failed to parse ${type.toString()} of id ${unParsedData['id']}',
     customErrorParsers: {UnsupportedError: (e, s) => CustomError(e, s)},
@@ -41,7 +45,7 @@ void main() {
         () => expect(response.fold((l) => l, (r) => r).runtimeType, EaseException));
 
     test('response should have Exception with uiMessage User not signed In',
-        () => expect(response.fold((l) => l.message, (r) => r), 'User not signed In'));
+        () => expect(response.fold((l) => l.uiMessage, (r) => r), 'User not signed In'));
   });
 
   group('Failure Case with Error', () {
@@ -49,7 +53,7 @@ void main() {
         // () => throw Error(), 'Failed to run',
         () => throw UnsupportedError('UnsupportedError message'),
         'Failed to run',
-        message: 'Something went wrong',
+        uiMessage: 'Something went wrong',
         infoParams: {'param1': 'test1'});
 
     test('response should return Left value', () => expect(response.isLeft(), true));

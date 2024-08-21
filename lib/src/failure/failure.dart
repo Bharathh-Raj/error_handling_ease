@@ -1,40 +1,97 @@
-import 'ease_error.dart';
+import 'package:error_handling_ease/error_handling_ease.dart';
 
-typedef ErrorCallback = void Function(
+typedef ErrorActions = void Function(
     dynamic e, StackTrace s, String log, bool isFatal, Map<String, dynamic>? infoParams);
-typedef ExceptionCallback = void Function(String message);
+typedef ExceptionActions = void Function(String uiMessage);
 typedef ParsingErrorLog = String Function(Type type, Map<String, dynamic> unParsedData);
 typedef CustomErrorParser = Failure Function(Object e, StackTrace s);
 
 abstract class Failure {
-  final String message;
+  /// Message to be shown to the user. By default it holds [defaultMessage].
+  /// Can we overridden when throwing an [EaseError].
+  final String uiMessage;
 
-  Failure({String? message}) : message = message ?? defaultMessage;
+  Failure({String? uiMessage}) : uiMessage = uiMessage ?? defaultMessage;
 
-  static late final ErrorCallback onError;
-  static late final ExceptionCallback onException;
+  /// Actions to take whenever [EaseError] was thrown
+  /// Usually we will log the error in console and report the error in Crash Reporting Service.
+  static late final ErrorActions onError;
+
+  /// Actions to take whenever [EaseException] was thrown
+  /// Usually we will log the error in console.
+  static late final ExceptionActions onException;
+
+  /// Default error message accessed from [uiMessage] field.
+  /// Which can be overridden when throwing an [EaseError].
   static late final String defaultMessage;
+
+  /// Default parsing error log. Quite useful to log with its type along with id for example.
+  /// eg: parsingErrorLog: (type, unParsedData) => 'Failed to parse ${type.toString()} with id ${unParsedData['id']}'
   static late final ParsingErrorLog parsingErrorLog;
+
+  /// We can control the errors and exceptions thrown in our code base. However we use lot of third-party packages.
+  /// eg: firebase_auth package throws exception of type [FirebaseAuthException] and dio package throws exception of type [DioException].
+  ///
+  /// By wrapping the third-party package code with [EitherEase.tryRun] or [EitherEase.tryRunAsync],
+  /// All these third-party exceptions and errors will be converted into [EaseError].
+  /// However it cannot preserve its error message, the error message is replaced with [failureLog] argument of [EitherEase.tryRun] or [EitherEase.tryRunAsync].
+  ///
+  /// With this field, we can parse those third party errors or exceptions into [EaseError] or [EaseException] by using [EitherEase.tryRun] or [EitherEase.tryRunAsync].
+  /// eg: Failure.configure(customErrorParsers: {FirebaseAuthException: (e, s) => EaseException(e.message), DioException: (e, s) => EaseError(e.message, e, s, infoParams: {'path': dioError.requestOptions.path,...})})
+  ///
+  /// PRO TIP: We can create a custom exceptions or error by extending [EaseException] or [EaseError].
+  /// Then we can write something like Failure.configure(customErrorParsers: {DioError: (e, s) => MyDioError(e as DioError)})
   static late final Map<Type, CustomErrorParser>? errorParsers;
 
-  static void configure(ErrorCallback errorCallback, ExceptionCallback exceptionCallback,
-      {String defaultErrorMessage = 'Sorry! Something went wrong.',
-      ParsingErrorLog? parsingErrorLogCallback,
-      Map<Type, CustomErrorParser>? customErrorParsers}) {
-    onError = errorCallback;
-    onException = exceptionCallback;
+  /// [errorActions] - Actions to take whenever [EaseError] was thrown
+  /// Usually we will log the error in console and report the error in Crash Reporting Service.
+  ///
+  /// [exceptionActions] - Actions to take whenever [EaseException] was thrown
+  /// Usually we will log the error in console.
+  ///
+  /// [defaultErrorMessage] - Default error message accessed from [uiMessage] field.
+  /// Which can be overridden when throwing an [EaseError].
+  ///
+  /// [parsingErrorLogCallback] - Default parsing error log. Quite useful to log with its type along with id for example.
+  /// eg: parsingErrorLog: (type, unParsedData) => 'Failed to parse ${type.toString()} with id ${unParsedData['id']}'
+  ///
+  /// [customErrorParsers] - We can control the errors and exceptions thrown in our code base. However we use lot of third-party packages.
+  /// eg: firebase_auth package throws exception of type [FirebaseAuthException] and dio package throws exception of type [DioException].
+  ///
+  /// By wrapping the third-party package code with [EitherEase.tryRun] or [EitherEase.tryRunAsync],
+  /// All these third-party exceptions and errors will be converted into [EaseError].
+  /// However it cannot preserve its error message, the error message is replaced with [failureLog] argument of [EitherEase.tryRun] or [EitherEase.tryRunAsync].
+  ///
+  /// With this field, we can parse those third party errors or exceptions into [EaseError] or [EaseException] by using [EitherEase.tryRun] or [EitherEase.tryRunAsync].
+  /// eg: Failure.configure(customErrorParsers: {FirebaseAuthException: (e, s) => EaseException(e.message), DioException: (e, s) => EaseError(e.message, e, s, infoParams: {'path': dioError.requestOptions.path,...})})
+  ///
+  /// PRO TIP: We can create a custom exceptions or error by extending [EaseException] or [EaseError].
+  /// Then we can write something like Failure.configure(customErrorParsers: {DioError: (e, s) => MyDioError(e as DioError)})
+  static void configure({
+    required ErrorActions errorActions,
+    required ExceptionActions exceptionActions,
+    String defaultErrorMessage = 'Sorry! Something went wrong.',
+    ParsingErrorLog? parsingErrorLogCallback,
+    Map<Type, CustomErrorParser>? customErrorParsers,
+  }) {
+    onError = errorActions;
+    onException = exceptionActions;
     defaultMessage = defaultErrorMessage;
     errorParsers = customErrorParsers;
     parsingErrorLog =
         parsingErrorLogCallback ?? (type, unParsedData) => 'Failed to parse ${type.toString()}';
   }
 
+  /// This must be thrown inside the catch statement of [try-catch].
+  /// This make sure to return the same error object if it is already a [Failure] object.
+  /// This also compares the error with all [errorParsers] to parse the error into Failure object.
+  /// Returns [EaseError] if the above conditions are failed.
   factory Failure.fromError(
     String log,
     dynamic e,
     StackTrace s, {
     Map<String, dynamic>? infoParams,
-    String? message,
+    String? uiMessage,
     bool isFatal = false,
   }) {
     if (e is Failure) return e;
@@ -45,11 +102,11 @@ abstract class Failure {
       e,
       s,
       infoParams: infoParams,
-      message: message,
+      uiMessage: uiMessage,
       isFatal: isFatal,
     );
   }
 
   @override
-  String toString() => message;
+  String toString() => uiMessage;
 }

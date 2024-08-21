@@ -7,7 +7,7 @@ class EaseError extends Failure {
     this.s, {
     this.infoParams,
     this.isFatal = false,
-    super.message,
+    super.uiMessage,
   }) {
     Failure.onError(e, s, log, isFatal, infoParams);
   }
@@ -29,7 +29,7 @@ class EaseError extends Failure {
 class ParsingError<T> extends EaseError {
   final Map<String, dynamic> unParsedData;
 
-  ParsingError(this.unParsedData, dynamic e, StackTrace s, {String? message, bool? isFatal})
+  ParsingError(this.unParsedData, dynamic e, StackTrace s, {String? uiMessage, bool? isFatal})
       : super(Failure.parsingErrorLog(T.runtimeType, unParsedData), e, s,
-            infoParams: unParsedData, message: message, isFatal: isFatal ?? false);
+            infoParams: unParsedData, uiMessage: uiMessage, isFatal: isFatal ?? false);
 }
