@@ -32,11 +32,11 @@ abstract class Failure {
   /// We can control the errors and exceptions thrown in our code base. However we use lot of third-party packages.
   /// eg: firebase_auth package throws exception of type [FirebaseAuthException] and dio package throws exception of type [DioException].
   ///
-  /// By wrapping the third-party package code with [EitherEase.tryRun] or [EitherEase.tryRunAsync],
+  /// By wrapping the third-party package code with [EaseEither.tryRun] or [EaseEither.tryRunAsync],
   /// All these third-party exceptions and errors will be converted into [EaseError].
-  /// However it cannot preserve its error message, the error message is replaced with [failureLog] argument of [EitherEase.tryRun] or [EitherEase.tryRunAsync].
+  /// However it cannot preserve its error message, the error message is replaced with [failureLog] argument of [EaseEither.tryRun] or [EaseEither.tryRunAsync].
   ///
-  /// With this field, we can parse those third party errors or exceptions into [EaseError] or [EaseException] by using [EitherEase.tryRun] or [EitherEase.tryRunAsync].
+  /// With this field, we can parse those third party errors or exceptions into [EaseError] or [EaseException] by using [EaseEither.tryRun] or [EaseEither.tryRunAsync].
   /// eg: Failure.configure(customErrorParsers: {FirebaseAuthException: (e, s) => EaseException(e.message), DioException: (e, s) => EaseError(e.message, e, s, infoParams: {'path': dioError.requestOptions.path,...})})
   ///
   /// PRO TIP: We can create a custom exceptions or error by extending [EaseException] or [EaseError].
@@ -58,11 +58,11 @@ abstract class Failure {
   /// [customErrorParsers] - We can control the errors and exceptions thrown in our code base. However we use lot of third-party packages.
   /// eg: firebase_auth package throws exception of type [FirebaseAuthException] and dio package throws exception of type [DioException].
   ///
-  /// By wrapping the third-party package code with [EitherEase.tryRun] or [EitherEase.tryRunAsync],
+  /// By wrapping the third-party package code with [EaseEither.tryRun] or [EaseEither.tryRunAsync],
   /// All these third-party exceptions and errors will be converted into [EaseError].
-  /// However it cannot preserve its error message, the error message is replaced with [failureLog] argument of [EitherEase.tryRun] or [EitherEase.tryRunAsync].
+  /// However it cannot preserve its error message, the error message is replaced with [failureLog] argument of [EaseEither.tryRun] or [EaseEither.tryRunAsync].
   ///
-  /// With this field, we can parse those third party errors or exceptions into [EaseError] or [EaseException] by using [EitherEase.tryRun] or [EitherEase.tryRunAsync].
+  /// With this field, we can parse those third party errors or exceptions into [EaseError] or [EaseException] by using [EaseEither.tryRun] or [EaseEither.tryRunAsync].
   /// eg: Failure.configure(customErrorParsers: {FirebaseAuthException: (e, s) => EaseException(e.message), DioException: (e, s) => EaseError(e.message, e, s, infoParams: {'path': dioError.requestOptions.path,...})})
   ///
   /// PRO TIP: We can create a custom exceptions or error by extending [EaseException] or [EaseError].
@@ -70,7 +70,7 @@ abstract class Failure {
   static void configure({
     required ErrorActions errorActions,
     required ExceptionActions exceptionActions,
-    String defaultErrorMessage = 'Sorry! Something went wrong.',
+    String defaultErrorMessage = 'Sorry! Something went wrong',
     ParsingErrorLog? parsingErrorLogCallback,
     Map<Type, CustomErrorParser>? customErrorParsers,
   }) {

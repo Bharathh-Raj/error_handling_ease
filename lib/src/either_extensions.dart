@@ -1,7 +1,7 @@
 import 'package:error_handling_ease/error_handling_ease.dart';
 import 'package:fpdart/fpdart.dart';
 
-extension EitherEase on Either {
+extension EaseEither on Either {
   /// Synchronous wrapper function to run any function. Returns type [Either<Failure, R>],
   /// which makes sure we handle both failure and success case whenever we use this function.
   ///

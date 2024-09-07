@@ -19,11 +19,10 @@ class EaseError extends Failure {
   final bool isFatal;
 
   @override
-  String toString() => '''
-      🚨${isFatal ? '🚨🚨Fatal' : ''} Error - $runtimeType - $log
-      ${infoParams != null ? 'infoParams - ${infoParams.toString()}' : ''}
-      ${s.toString()}
-      ''';
+  String toString() =>
+  '''🚨${isFatal ? '🚨🚨Fatal' : ''} Error - $runtimeType - $log
+  ${infoParams != null ? 'infoParams - ${infoParams.toString()}' : ''}
+  ${s.toString()}''';
 }
 
 class ParsingError<T> extends EaseError {
