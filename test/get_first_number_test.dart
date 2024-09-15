@@ -7,7 +7,7 @@ class MyRangeError extends EaseError {
 }
 
 void main() {
-  Failure.configure(
+  EaseFailure.configure(
       errorActions: (e, s, log, isFatal, infoParams) {
         print('e -> $e');
         print('log -> $log');          // <-- 'Failed to get first number'
@@ -26,7 +26,7 @@ void main() {
   },);
 }
 
-Either<Failure, int> getFirstNumber(List<int> numbers) {
+Either<EaseFailure, int> getFirstNumber(List<int> numbers) {
   return EaseEither.tryRun(
         () => numbers[0], // <-- Obviously it will fail, since the list is empty
     'Failed to get first number', // <-- log in case it fails

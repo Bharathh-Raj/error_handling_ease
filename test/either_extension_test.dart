@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:error_handling_ease/error_handling_ease.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -7,7 +9,7 @@ class UserNotRegisteredException extends EaseException{
 }
 
 void main() {
-  Failure.configure(
+  EaseFailure.configure(
     errorActions: (e, s, log, isFatal, infoParams) {
       print(log);
       print(e);
@@ -25,21 +27,21 @@ void main() {
 
       test('response should return Right value', () => expect(response.isRight(), true));
 
-      test('response should be of type Right<Failure, int>',
-          () => expect(response.runtimeType, Right<Failure, int>));
+      test('response should be of type Right<EaseFailure, int>',
+          () => expect(response.runtimeType, Right<EaseFailure, int>));
 
       test('response should have value of 3', () => expect(response.fold((l) => l, (r) => r), 3));
     },
   );
 
-  group('Failure Case with Exception', () {
+  group('EaseFailure Case with Exception', () {
     final response =
         EaseEither.tryRun<int>(() => throw EaseException('User not signed In'), 'Failed to add');
 
     test('response should return Left value', () => expect(response.isLeft(), true));
 
-    test('response should be of type Left<Failure, int>',
-        () => expect(response.runtimeType, Left<Failure, int>));
+    test('response should be of type Left<EaseFailure, int>',
+        () => expect(response.runtimeType, Left<EaseFailure, int>));
 
     test('response should have Exception type EaseException',
         () => expect(response.fold((l) => l, (r) => r).runtimeType, EaseException));
@@ -48,7 +50,7 @@ void main() {
         () => expect(response.fold((l) => l.uiMessage, (r) => r), 'User not signed In'));
   });
 
-  group('Failure Case with Error', () {
+  group('EaseFailure Case with Error', () {
     final response = EaseEither.tryRun<int>(
         // () => throw Error(), 'Failed to run',
         () => throw UnsupportedError('UnsupportedError message'),
@@ -58,8 +60,8 @@ void main() {
 
     test('response should return Left value', () => expect(response.isLeft(), true));
 
-    test('response should be of type Left<Failure, int>',
-        () => expect(response.runtimeType, Left<Failure, int>));
+    test('response should be of type Left<EaseFailure, int>',
+        () => expect(response.runtimeType, Left<EaseFailure, int>));
 
     test('response should have Error type EaseError', () {
       final resultFailureType = response.fold((l) => l, (r) => r).runtimeType;

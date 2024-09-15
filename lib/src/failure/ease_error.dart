@@ -1,6 +1,6 @@
 import '../../error_handling_ease.dart';
 
-class EaseError extends Failure {
+class EaseError extends EaseFailure {
   EaseError(
     this.log,
     this.e,
@@ -9,7 +9,7 @@ class EaseError extends Failure {
     this.isFatal = false,
     super.uiMessage,
   }) {
-    Failure.onError(e, s, log, isFatal, infoParams);
+    EaseFailure.onError(e, s, log, isFatal, infoParams);
   }
 
   final dynamic e;
@@ -29,6 +29,6 @@ class ParsingError<T> extends EaseError {
   final Map<String, dynamic> unParsedData;
 
   ParsingError(this.unParsedData, dynamic e, StackTrace s, {String? uiMessage, bool? isFatal})
-      : super(Failure.parsingErrorLog(T.runtimeType, unParsedData), e, s,
+      : super(EaseFailure.parsingErrorLog(T.runtimeType, unParsedData), e, s,
             infoParams: unParsedData, uiMessage: uiMessage, isFatal: isFatal ?? false);
 }

@@ -1,8 +1,8 @@
 import 'package:error_handling_ease/src/failure/failure.dart';
 
-class EaseException extends Failure {
+class EaseException extends EaseFailure {
   EaseException(String? uiMessage) : super(uiMessage: uiMessage) {
-    Failure.onException(super.uiMessage);
+    EaseFailure.onException(super.uiMessage);
   }
 
   @override

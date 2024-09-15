@@ -4,14 +4,14 @@ typedef ErrorActions = void Function(
     dynamic e, StackTrace s, String log, bool isFatal, Map<String, dynamic>? infoParams);
 typedef ExceptionActions = void Function(String uiMessage);
 typedef ParsingErrorLog = String Function(Type type, Map<String, dynamic> unParsedData);
-typedef CustomErrorParser = Failure Function(Object e, StackTrace s);
+typedef CustomErrorParser = EaseFailure Function(Object e, StackTrace s);
 
-abstract class Failure {
+abstract class EaseFailure {
   /// Message to be shown to the user. By default it holds [defaultMessage].
   /// Can we overridden when throwing an [EaseError].
   final String uiMessage;
 
-  Failure({String? uiMessage}) : uiMessage = uiMessage ?? defaultMessage;
+  EaseFailure({String? uiMessage}) : uiMessage = uiMessage ?? defaultMessage;
 
   /// Actions to take whenever [EaseError] was thrown
   /// Usually we will log the error in console and report the error in Crash Reporting Service.
@@ -37,10 +37,10 @@ abstract class Failure {
   /// However it cannot preserve its error message, the error message is replaced with [failureLog] argument of [EaseEither.tryRun] or [EaseEither.tryRunAsync].
   ///
   /// With this field, we can parse those third party errors or exceptions into [EaseError] or [EaseException] by using [EaseEither.tryRun] or [EaseEither.tryRunAsync].
-  /// eg: Failure.configure(customErrorParsers: {FirebaseAuthException: (e, s) => EaseException(e.message), DioException: (e, s) => EaseError(e.message, e, s, infoParams: {'path': dioError.requestOptions.path,...})})
+  /// eg: EaseFailure.configure(customErrorParsers: {FirebaseAuthException: (e, s) => EaseException(e.message), DioException: (e, s) => EaseError(e.message, e, s, infoParams: {'path': dioError.requestOptions.path,...})})
   ///
   /// PRO TIP: We can create a custom exceptions or error by extending [EaseException] or [EaseError].
-  /// Then we can write something like Failure.configure(customErrorParsers: {DioError: (e, s) => MyDioError(e as DioError)})
+  /// Then we can write something like EaseFailure.configure(customErrorParsers: {DioError: (e, s) => MyDioError(e as DioError)})
   static late final Map<Type, CustomErrorParser>? errorParsers;
 
   /// [errorActions] - Actions to take whenever [EaseError] was thrown
@@ -63,10 +63,10 @@ abstract class Failure {
   /// However it cannot preserve its error message, the error message is replaced with [failureLog] argument of [EaseEither.tryRun] or [EaseEither.tryRunAsync].
   ///
   /// With this field, we can parse those third party errors or exceptions into [EaseError] or [EaseException] by using [EaseEither.tryRun] or [EaseEither.tryRunAsync].
-  /// eg: Failure.configure(customErrorParsers: {FirebaseAuthException: (e, s) => EaseException(e.message), DioException: (e, s) => EaseError(e.message, e, s, infoParams: {'path': dioError.requestOptions.path,...})})
+  /// eg: EaseFailure.configure(customErrorParsers: {FirebaseAuthException: (e, s) => EaseException(e.message), DioException: (e, s) => EaseError(e.message, e, s, infoParams: {'path': dioError.requestOptions.path,...})})
   ///
   /// PRO TIP: We can create a custom exceptions or error by extending [EaseException] or [EaseError].
-  /// Then we can write something like Failure.configure(customErrorParsers: {DioError: (e, s) => MyDioError(e as DioError)})
+  /// Then we can write something like EaseFailure.configure(customErrorParsers: {DioError: (e, s) => MyDioError(e as DioError)})
   static void configure({
     required ErrorActions errorActions,
     required ExceptionActions exceptionActions,
@@ -83,10 +83,10 @@ abstract class Failure {
   }
 
   /// This must be thrown inside the catch statement of [try-catch].
-  /// This make sure to return the same error object if it is already a [Failure] object.
-  /// This also compares the error with all [errorParsers] to parse the error into Failure object.
+  /// This make sure to return the same error object if it is already a [EaseFailure] object.
+  /// This also compares the error with all [errorParsers] to parse the error into EaseFailure object.
   /// Returns [EaseError] if the above conditions are failed.
-  factory Failure.fromError(
+  factory EaseFailure.fromError(
     String log,
     dynamic e,
     StackTrace s, {
@@ -94,9 +94,11 @@ abstract class Failure {
     String? uiMessage,
     bool isFatal = false,
   }) {
-    if (e is Failure) return e;
+    if (e is EaseFailure) return e;
+
     final customParser = errorParsers?[e.runtimeType];
     if (customParser != null) return customParser(e, s);
+
     return EaseError(
       log,
       e,
