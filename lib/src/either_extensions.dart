@@ -1,7 +1,8 @@
 import 'package:error_handling_ease/error_handling_ease.dart';
 import 'package:fpdart/fpdart.dart';
 
-typedef EaseEither<T> = Either<EaseFailure, T>;
+typedef EaseEither<R> = Either<EaseFailure, R>;
+typedef EaseTaskEither<R> = TaskEither<EaseFailure, R>;
 
 /// Synchronous wrapper function to run any function. Returns type [Either<EaseFailure, R>],
 /// which makes sure we handle both failure and success case whenever we use this function.
@@ -19,8 +20,10 @@ EaseEither<R> tryRun<R>(R Function() call, String failureLog,
         (e, s) => EaseFailure.fromError(failureLog, e, s,
             infoParams: infoParams, uiMessage: uiMessage, isFatal: isFatal));
 
-/// Asynchronous wrapper function to run any function. Returns type [Future<Either<EaseFailure, R>>],
+/// Asynchronous wrapper function to run any function. Returns type [TaskEither<EaseFailure, R>],
 /// which makes sure we handle both failure and success case whenever we use this function.
+///
+/// Use run() method to run this function and it also convert the TaskEither to Future<Either>.
 ///
 /// In case of an error, if the error object is already a [EaseFailure] type, it passes it over without tampering it.
 /// Parses the error to [EaseFailure] object if matches with any [EaseFailure.errorParsers]
@@ -28,12 +31,12 @@ EaseEither<R> tryRun<R>(R Function() call, String failureLog,
 ///
 /// [call] - Asynchronous function to be wrapped inside this function.
 /// [failureLog], [infoParams] & [isFatal] - Exposed as [log], [infoParams] & [isFatal] field in [ErrorActions] which you've configured via [EaseFailure.configure(errorActions: ...)]
-Future<EaseEither<R>> tryRunAsync<R>(Future<R> Function() call, String failureLog,
+EaseTaskEither<R> tryRunAsync<R>(Future<R> Function() call, String failureLog,
         {Map<String, dynamic>? infoParams, String? uiMessage, bool isFatal = false}) =>
     TaskEither.tryCatch(
         call,
         (e, s) => EaseFailure.fromError(failureLog, e, s,
-            infoParams: infoParams, uiMessage: uiMessage, isFatal: isFatal)).run();
+            infoParams: infoParams, uiMessage: uiMessage, isFatal: isFatal));
 
 /// Used to try parsing an object from json format. Returns Either<ParsingError<R>, R> type,
 /// which makes sure we handle both failure and success case whenever we use this function.

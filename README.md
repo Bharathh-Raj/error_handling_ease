@@ -91,8 +91,8 @@ Future<School> fetchSchoolOfId(String schoolId) async {
 ## Step 1 - [Global Failure Configuration](#global%20configuration)
 We need to configure how to handle
 ## Step 2 - [Wrap functions with EaseEither methods](#EaseEither)
-- Synchronous Function Wrapper - EaseEither.tryRun()
-- Asynchronous Function Wrapper - EaseEither.tryRunAsync()
+- Synchronous Function Wrapper - tryRun()
+- Asynchronous Function Wrapper - tryRunAsync()
 - Parsing Wrapper - EaseEither.tryParse()
 
 > [!NOTE]
@@ -189,7 +189,7 @@ Learn more about this in [here](https://www.sandromaglione.com/articles/either-e
 Let's say this function of return type `Either<EaseFailure, User>` returns logged in user
 ```dart
 Either<EaseFailure, User> getCurrentUser() {
-	return EaseEither.tryRun(() {
+	return tryRun(() {
 		final currentUser = FirebaseAuth.instance.currentUser;
 		if(currentUser == null) throw EaseException('Please login to continue'); 
 		return currentUser;
@@ -206,7 +206,7 @@ userResult.fold( // <-- Either.fold method forces us to handle both failure and 
 );
 ```
 # EaseEither
-## Synchronous Function Wrapper - EaseEither.tryRun()
+## Synchronous Function Wrapper - tryRun()
 
 ```dart
 void result() {
@@ -239,7 +239,7 @@ void result() {
 }
 
 Either<EaseFailure, double> sumOfList(List list) {  
-  return EaseEither.tryRun((){                      // <-- EaseEither.tryRun
+  return tryRun((){                      // <-- tryRun
     return list.fold(0, (previousValue, e) => previousValue + e);  
   }, 'Failed to find sum of list', infoParams: {'list': list});  
 }
@@ -271,7 +271,7 @@ void main() {
 ```
 
 ![](https://i.imgur.com/1h7vB57.png)
-## Asynchronous Function Wrapper - EaseEither.tryRunAsync()
+## Asynchronous Function Wrapper - tryRunAsync()
 
 ```dart
 Future<School> fetchSchoolOfId(String schoolId) async {
@@ -315,7 +315,7 @@ final firstNumber = getFirstNumber([]);   // <-- Passing an empty list to fail
 	);
 
 Either<EaseFailure, int> getFirstNumber(List<int> numbers) {
-	return EaseEither.tryRun(
+	return tryRun(
 		() => numbers[0], // <-- Obviously it will fail, since the list is empty
 		'Failed to get first number', // <-- log in case it fails
 		infoParams: {'numbers': numbers},
