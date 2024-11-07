@@ -23,7 +23,7 @@ void main() {
   group(
     'Success cases',
     () {
-      final response = EaseEither.tryRun(() => 1 + 2, 'Failed to add');
+      final response = tryRun(() => 1 + 2, 'Failed to add');
 
       test('response should return Right value', () => expect(response.isRight(), true));
 
@@ -36,7 +36,7 @@ void main() {
 
   group('EaseFailure Case with Exception', () {
     final response =
-        EaseEither.tryRun<int>(() => throw EaseException('User not signed In'), 'Failed to add');
+        tryRun<int>(() => throw EaseException('User not signed In'), 'Failed to add');
 
     test('response should return Left value', () => expect(response.isLeft(), true));
 
@@ -51,7 +51,7 @@ void main() {
   });
 
   group('EaseFailure Case with Error', () {
-    final response = EaseEither.tryRun<int>(
+    final response = tryRun<int>(
         // () => throw Error(), 'Failed to run',
         () => throw UnsupportedError('UnsupportedError message'),
         'Failed to run',
