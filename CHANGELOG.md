@@ -3,3 +3,6 @@
 
 # 0.2.0
 - documentation update
+
+# 0.3.0
+- Documentation update
