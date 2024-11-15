@@ -9,3 +9,6 @@
 
 # 0.4.0
 - Breaking Change: Future<EaseEither<>> to EaseTaskEither<>
+
+# 0.4.1
+- Fix: Type mismatch
