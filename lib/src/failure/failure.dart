@@ -4,7 +4,7 @@ typedef ErrorActions = void Function(
     dynamic e, StackTrace s, String log, bool isFatal, Map<String, dynamic>? infoParams);
 typedef ExceptionActions = void Function(String uiMessage);
 typedef ParsingErrorLog = String Function(Type type, Map<String, dynamic> unParsedData);
-typedef CustomErrorParser<T> = EaseFailure Function(T e, StackTrace s);
+typedef CustomErrorParser = EaseFailure Function(dynamic e, StackTrace s);
 
 abstract class EaseFailure {
   /// Message to be shown to the user. By default it holds [defaultMessage].
@@ -41,7 +41,7 @@ abstract class EaseFailure {
   ///
   /// PRO TIP: We can create a custom exceptions or error by extending [EaseException] or [EaseError].
   /// Then we can write something like EaseFailure.configure(customErrorParsers: {DioError: (e, s) => MyDioError(e as DioError)})
-  static late final Map<Type, CustomErrorParser<Type>>? errorParsers;
+  static late final Map<Type, CustomErrorParser>? errorParsers;
 
   /// [errorActions] - Actions to take whenever [EaseError] was thrown
   /// Usually we will log the error in console and report the error in Crash Reporting Service.
